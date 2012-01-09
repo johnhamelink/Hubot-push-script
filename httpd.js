@@ -4,8 +4,9 @@ module.exports = function(robot){
 	pubsub.setMaxListeners(1);
 	var express = require('express');
 	express = express.createServer(express.logger(),express.bodyParser());
-	
-	var github = require('./github.js').init(robot,express,pubsub),
-	    skeleton = require('./skeletonhttpd.js').init(robot,express,pubsub);
+
+	var github    = require('./github.js').init(robot,express,pubsub),
+			bitbucket = require('./bitbucket.js').init(robot,express,pubsub),
+	    skeleton  = require('./skeletonhttpd.js').init(robot,express,pubsub);
 	express.listen(1337);
 };
