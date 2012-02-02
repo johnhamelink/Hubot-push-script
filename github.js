@@ -23,7 +23,7 @@ module.exports = flow = {
 		this.robot.hear('',function(msg){
 			flow.pubsub.removeAllListeners('github/newCommit');
 			flow.pubsub.on('github/newCommit',function(payload){
-				var response = '['+payload.repository.name+'] New commit by '+payload.commits[0].author.name+': "'+payload.commits[0].message+'" '+payload.commits[0].url;
+				var response = '[' payload.repository.name '] New commit by ' payload.commits[0].author.name ': "' payload.commits[0].message '" ' payload.commits[0].url;
 				msg.send(response);
 			});
 		});

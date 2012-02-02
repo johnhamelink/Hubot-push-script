@@ -2,10 +2,11 @@ module.exports = flow = {
 	robot: null,
 	express: null,
 	pubsub: null,
+	bitly: null,
 	init: function(robot,express,pubsub){
 		this.robot = robot;
 		this.express = express;
-		this.pubsub = express;
+		this.pubsub = pubsub;
 		this.setUpExpress();
 		this.setUpHubot();
 	},
@@ -23,8 +24,17 @@ module.exports = flow = {
 		this.robot.hear('',function(msg){
 			flow.pubsub.removeAllListeners('bitbucket/newCommit');
 			flow.pubsub.on('bitbucket/newCommit',function(payload){
-				var response = '['+payload.repository.name+'] New commit by '+payload.commits[0].author+': "'+payload.commits[0].message+'" '+payload.repository.website+payload.repository.absolute_url.'changeset/'+payload.repository.commits[0].node;
-				msg.send(response);
+				payload.commits[0].message = payload.commits[0].message.replace(/\n/gm,"");
+				var url = null;
+				var Bitly = require('bitly');
+				var bitly = new Bitly('s0l1dsnak3123', 'R_36bd50ae52c1ad2de6eb92fe4ee3233d');
+				bitly.shorten('https://bitbucket.org' payload.repository.absolute_url 'changeset/' payload.commits[0].node,function(err,resp){
+					if(err) throw err;
+					console.log(resp.data);
+					url = resp.data['url'];
+					var response = '\00307[' payload.repository.name ']\003 \00304 ' payload.commits.length '\003 \00300' payload.commits[0].author '\003: "' payload.commits[0].message '" \00302'  url   '\003 \00304ChangeSet: \003 '   payload.commits[0].node;
+					msg.send(response);
+				});
 			});
 		});
 	}
